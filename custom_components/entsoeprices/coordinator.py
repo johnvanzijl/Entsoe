@@ -6,7 +6,7 @@ import aiohttp
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN
+from .const import DOMAIN, CONF_API_KEY
 
 _LOGGER = logging.getLogger(__name__)
 
