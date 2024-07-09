@@ -12,12 +12,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][entry.entry_id] = coordinator = EntsoeDataUpdateCoordinator(hass, entry.data[CONF_API_KEY])
 
     await coordinator.async_refresh()
-    hass.config_entries.async_setup_platforms(entry, PLATFORMS)
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     return True
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload ENTSO-E Prices config entry."""
-    await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
+    await hass.config_entries.async_forward_entry_unload(entry, PLATFORMS)
     hass.data[DOMAIN].pop(entry.entry_id)
     return True
