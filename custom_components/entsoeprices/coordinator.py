@@ -28,7 +28,8 @@ async def fetch_day_ahead_prices(api_key, start_date, end_date):
     async with aiohttp.ClientSession() as session:
         async with session.get(API_URL, params=params) as response:
             if response.status != 200:
-                _LOGGER.error("Failed to retrieve data: %s", response.status)
+                response_text = await response.text()
+                _LOGGER.error("Failed to retrieve data: %s, Response: %s", response.status, response_text)
                 raise UpdateFailed(f"Failed to retrieve data: {response.status}")
             data = await response.text()
             _LOGGER.debug("Successfully fetched data from ENTSO-E API: %s", data)
