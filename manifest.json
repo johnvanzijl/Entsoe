@@ -1,9 +1,0 @@
-{
-  "domain": "entsoe_prices",
-  "name": "ENTSO-E Prices",
-  "version": "1.0",
-  "documentation": "https://github.com/yourusername/entsoe_prices",
-  "requirements": ["requests"],
-  "dependencies": [],
-  "codeowners": ["@yourusername"]
-}
