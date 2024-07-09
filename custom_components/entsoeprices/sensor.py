@@ -4,7 +4,7 @@ import logging
 import aiohttp
 
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import HomeAssistantType
@@ -12,6 +12,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN, CONF_API_KEY, DEVICE_NAME
+from .coordinator import EntsoeDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -60,46 +61,9 @@ def calculate_consumer_price(groothandelsprijs_per_mwh):
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     """Set up the sensor platform."""
     api_key = config_entry.data[CONF_API_KEY]
-    coordinator = EntsoeDataUpdateCoordinator(hass, api_key)
+    coordinator = hass.data[DOMAIN][config_entry.entry_id]
     await coordinator.async_refresh()
     async_add_entities([EntsoeSensor(coordinator)], True)
-
-class EntsoeDataUpdateCoordinator(DataUpdateCoordinator):
-    """Class to manage fetching data from the ENTSO-E API."""
-
-    def __init__(self, hass: HomeAssistantType, api_key: str):
-        """Initialize."""
-        self.api_key = api_key
-        self.update_interval = INITIAL_UPDATE_INTERVAL
-        super().__init__(
-            hass,
-            _LOGGER,
-            name="EntsoeDataUpdateCoordinator",
-            update_method=self._async_update_data,
-            update_interval=self.update_interval,
-        )
-
-    async def _async_update_data(self):
-        """Fetch data from ENTSO-E."""
-        _LOGGER.debug("Updating data from ENTSO-E")
-        today = datetime.now()
-        start_date = today.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
-        end_date = start_date + timedelta(days=1)
-
-        try:
-            data = await fetch_day_ahead_prices(self.api_key, start_date, end_date)
-            _LOGGER.debug("Fetched data: %s", data)  # Log the raw data
-            # Parse data here. This is an example. You should parse the actual XML data.
-            groothandelsprijzen = [50]  # Example wholesale prices in €/MWh, should parse the XML data
-            _LOGGER.debug("Parsed wholesale prices: %s", groothandelsprijzen)
-            consumentenprijzen = [calculate_consumer_price(prijs) for prijs in groothandelsprijzen]
-            _LOGGER.debug("Calculated consumer prices: %s", consumentenprijzen)
-            # Update the polling interval after the initial update
-            self.update_interval = MIN_TIME_BETWEEN_UPDATES
-            return consumentenprijzen
-        except Exception as e:
-            _LOGGER.error("Error fetching data: %s", e)
-            raise UpdateFailed(f"Error fetching data: {e}")
 
 class EntsoeSensor(SensorEntity):
     """Representation of a Sensor."""
