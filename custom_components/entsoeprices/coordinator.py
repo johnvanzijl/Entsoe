@@ -40,17 +40,22 @@ def parse_prices(data):
     root = ET.fromstring(data)
     timeseries = []
     for period in root.findall('.//Period'):
+        _LOGGER.debug("Period: %s", period)
         start_time = period.find('timeInterval/start').text
+        _LOGGER.debug("start_time: %s", start_time)
         end_time = period.find('timeInterval/end').text
         for point in period.findall('Point'):
             position = point.find('position').text
+            _LOGGER.debug("position: %s", position)
             price = point.find('price.amount').text
+            _LOGGER.debug("price: %s", price)
             timeseries.append({
                 'start_time': start_time,
                 'end_time': end_time,
                 'position': position,
                 'price': float(price)
             })
+    _LOGGER.debug("timeseries: %s", timeseries)
     return timeseries
 
 def calculate_consumer_price(groothandelsprijs_per_mwh):
