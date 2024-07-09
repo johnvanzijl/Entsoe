@@ -26,6 +26,7 @@ async def fetch_day_ahead_prices(api_key, start_date, end_date):
     }
 
     async with aiohttp.ClientSession() as session:
+        _LOGGER.error("URL: %s, params: %s", API_URL, params)
         async with session.get(API_URL, params=params) as response:
             if response.status != 200:
                 response_text = await response.text()
