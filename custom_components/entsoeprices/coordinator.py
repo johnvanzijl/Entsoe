@@ -2,11 +2,12 @@
 from datetime import datetime, timedelta
 import logging
 import aiohttp
+import xml.etree.ElementTree as ET
 
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.core import HomeAssistant
 
-from .const import DOMAIN, CONF_API_KEY, API_URL
+from .const import *
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -25,7 +26,6 @@ async def fetch_day_ahead_prices(api_key, start_date, end_date):
     }
 
     async with aiohttp.ClientSession() as session:
-        _LOGGER.error("URL: %s, params: %s", API_URL, params)
         async with session.get(API_URL, params=params) as response:
             if response.status != 200:
                 response_text = await response.text()
@@ -35,20 +35,33 @@ async def fetch_day_ahead_prices(api_key, start_date, end_date):
             _LOGGER.debug("Successfully fetched data from ENTSO-E API: %s", data)
             return data
 
+def parse_prices(data):
+    """Parse the XML data to extract prices."""
+    root = ET.fromstring(data)
+    timeseries = []
+    for period in root.findall('.//Period'):
+        start_time = period.find('timeInterval/start').text
+        end_time = period.find('timeInterval/end').text
+        for point in period.findall('Point'):
+            position = point.find('position').text
+            price = point.find('price.amount').text
+            timeseries.append({
+                'start_time': start_time,
+                'end_time': end_time,
+                'position': position,
+                'price': float(price)
+            })
+    return timeseries
+
 def calculate_consumer_price(groothandelsprijs_per_mwh):
     _LOGGER.debug("Calculating consumer price for wholesale price: %s", groothandelsprijs_per_mwh)
-    netwerkkosten_per_kwh = 0.05
-    belastingen_en_heffingen_per_kwh = 0.12
-    ode_per_kwh = 0.02
-    marge_en_administratiekosten_per_kwh = 0.03
-
     groothandelsprijs_per_kwh = groothandelsprijs_per_mwh / 1000
     consumentenprijs_per_kwh = (
         groothandelsprijs_per_kwh +
-        netwerkkosten_per_kwh +
-        belastingen_en_heffingen_per_kwh +
-        ode_per_kwh +
-        marge_en_administratiekosten_per_kwh
+        NETWERKKOSTEN_PER_KWH +
+        BELASTINGEN_EN_HEFFINGEN_PER_KWH +
+        ODE_PER_KWH +
+        MARGE_EN_ADMINISTRATIEKOSTEN_PER_KWH
     )
     _LOGGER.debug("Calculated consumer price: %s", consumentenprijs_per_kwh)
     return consumentenprijs_per_kwh
@@ -78,14 +91,13 @@ class EntsoeDataUpdateCoordinator(DataUpdateCoordinator):
         try:
             data = await fetch_day_ahead_prices(self.api_key, start_date, end_date)
             _LOGGER.debug("Fetched data: %s", data)  # Log the raw data
-            # Parse data here. This is an example. You should parse the actual XML data.
-            groothandelsprijzen = [50]  # Example wholesale prices in €/MWh, should parse the XML data
-            _LOGGER.debug("Parsed wholesale prices: %s", groothandelsprijzen)
-            consumentenprijzen = [calculate_consumer_price(prijs) for prijs in groothandelsprijzen]
-            _LOGGER.debug("Calculated consumer prices: %s", consumentenprijzen)
-            # Update the polling interval after the initial update
-            self.update_interval = MIN_TIME_BETWEEN_UPDATES
-            return consumentenprijzen
+            timeseries = parse_prices(data)
+            _LOGGER.debug("Parsed timeseries: %s", timeseries)
+            # Calculate consumer prices
+            consumentenprijzen = [calculate_consumer_price(point['price']) for point in timeseries]
+            for i, point in enumerate(timeseries):
+                point['consumer_price'] = consumentenprijzen[i]
+            return timeseries
         except Exception as e:
             _LOGGER.error("Error fetching data: %s", e)
             raise UpdateFailed(f"Error fetching data: {e}")
