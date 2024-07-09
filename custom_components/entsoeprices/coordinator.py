@@ -85,8 +85,8 @@ class EntsoeDataUpdateCoordinator(DataUpdateCoordinator):
         """Fetch data from ENTSO-E."""
         _LOGGER.debug("Updating data from ENTSO-E")
         today = datetime.now()
-        start_date = today.replace(hour=0, minute=0, second=0, microsecond=0) + timedelta(days=1)
-        end_date = start_date + timedelta(days=1)
+        start_date = today.replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=1)
+        end_date = start_date + timedelta(days=2)
 
         try:
             data = await fetch_day_ahead_prices(self.api_key, start_date, end_date)
