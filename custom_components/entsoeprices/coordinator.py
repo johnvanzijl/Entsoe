@@ -10,7 +10,7 @@ from .const import DOMAIN, CONF_API_KEY
 
 _LOGGER = logging.getLogger(__name__)
 
-API_URL = 'https://transparency.entsoe.eu/api'
+API_URL = 'https://web-api.tp.entsoe.e/api'
 MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=15)
 INITIAL_UPDATE_INTERVAL = timedelta(minutes=1)
 
