@@ -10,12 +10,11 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 
-from .const import DOMAIN, CONF_API_KEY, DEVICE_NAME
+from .const import DOMAIN, CONF_API_KEY, DEVICE_NAME, API_URL
 from .coordinator import EntsoeDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
-API_URL = 'https://web-api.tp.entsoe.eu/api'
 MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=15)
 INITIAL_UPDATE_INTERVAL = timedelta(minutes=1)
 
