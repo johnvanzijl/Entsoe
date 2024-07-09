@@ -2,7 +2,7 @@
 from homeassistant.components.button import ButtonEntity
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, DEVICE_NAME
+from .const import DOMAIN, DEVICE_NAME, CONF_API_KEY
 
 class EntsoePricesUpdateButton(CoordinatorEntity, ButtonEntity):
     """Button to manually update ENTSO-E Prices."""
