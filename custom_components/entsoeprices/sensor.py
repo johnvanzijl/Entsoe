@@ -10,13 +10,10 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.core import HomeAssistant
 from homeassistant.config_entries import ConfigEntry
 
-from .const import DOMAIN, CONF_API_KEY, DEVICE_NAME, API_URL
+from .const import *
 from .coordinator import EntsoeDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
-
-MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=15)
-INITIAL_UPDATE_INTERVAL = timedelta(minutes=1)
 
 async def fetch_day_ahead_prices(api_key, start_date, end_date):
     _LOGGER.debug("Fetching day ahead prices from ENTSO-E API")
@@ -32,7 +29,8 @@ async def fetch_day_ahead_prices(api_key, start_date, end_date):
     async with aiohttp.ClientSession() as session:
         async with session.get(API_URL, params=params) as response:
             if response.status != 200:
-                _LOGGER.error("Failed to retrieve data: %s", response.status)
+                response_text = await response.text()
+                _LOGGER.error("Failed to retrieve data: %s, Response: %s", response.status, response_text)
                 raise UpdateFailed(f"Failed to retrieve data: {response.status}")
             data = await response.text()
             _LOGGER.debug("Successfully fetched data from ENTSO-E API: %s", data)
@@ -40,25 +38,20 @@ async def fetch_day_ahead_prices(api_key, start_date, end_date):
 
 def calculate_consumer_price(groothandelsprijs_per_mwh):
     _LOGGER.debug("Calculating consumer price for wholesale price: %s", groothandelsprijs_per_mwh)
-    netwerkkosten_per_kwh = 0.05
-    belastingen_en_heffingen_per_kwh = 0.12
-    ode_per_kwh = 0.02
-    marge_en_administratiekosten_per_kwh = 0.03
-
     groothandelsprijs_per_kwh = groothandelsprijs_per_mwh / 1000
     consumentenprijs_per_kwh = (
         groothandelsprijs_per_kwh +
-        netwerkkosten_per_kwh +
-        belastingen_en_heffingen_per_kwh +
-        ode_per_kwh +
-        marge_en_administratiekosten_per_kwh
+        NETWERKKOSTEN_PER_KWH +
+        BELASTINGEN_EN_HEFFINGEN_PER_KWH +
+        ODE_PER_KWH +
+        MARGE_EN_ADMINISTRATIEKOSTEN_PER_KWH
     )
     _LOGGER.debug("Calculated consumer price: %s", consumentenprijs_per_kwh)
     return consumentenprijs_per_kwh
 
 async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry, async_add_entities: AddEntitiesCallback):
     """Set up the sensor platform."""
-    api_key = config_entry.data[CONF_API_KEY]
+    api_key = config_entry.data.get(CONF_API_KEY, DEFAULT_API_KEY)
     coordinator = hass.data[DOMAIN][config_entry.entry_id]
     await coordinator.async_refresh()
     async_add_entities([EntsoeSensor(coordinator)], True)
@@ -84,8 +77,8 @@ class EntsoeSensor(SensorEntity):
     def state(self):
         """Return the state of the sensor."""
         if self.coordinator.data:
-            _LOGGER.debug("Returning state: %s", self.coordinator.data[0])
-            return self.coordinator.data[0]  # Example: returning the first price
+            _LOGGER.debug("Returning state: %s", self.coordinator.data[0]['consumer_price'])
+            return self.coordinator.data[0]['consumer_price']  # Example: returning the first consumer price
         return None
 
     @property
@@ -98,7 +91,7 @@ class EntsoeSensor(SensorEntity):
         """Return the state attributes."""
         if self.coordinator.data:
             _LOGGER.debug("Returning state attributes: %s", self.coordinator.data)
-            return {"prices": self.coordinator.data}
+            return {"timeseries": self.coordinator.data}
         return {}
 
     async def async_update(self):
