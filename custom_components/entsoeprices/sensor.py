@@ -7,9 +7,8 @@ from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import HomeAssistantType
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
+from homeassistant.config_entries import ConfigEntry
 
 from .const import DOMAIN, CONF_API_KEY, DEVICE_NAME
 from .coordinator import EntsoeDataUpdateCoordinator
