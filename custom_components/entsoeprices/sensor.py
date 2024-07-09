@@ -15,7 +15,7 @@ from .coordinator import EntsoeDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
-API_URL = 'https://web-api.tp.entsoe.e/api'
+API_URL = 'https://web-api.tp.entsoe.eu/api'
 MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=15)
 INITIAL_UPDATE_INTERVAL = timedelta(minutes=1)
 
