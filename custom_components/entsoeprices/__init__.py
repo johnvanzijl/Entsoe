@@ -7,10 +7,12 @@ from .const import DOMAIN
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up ENTSO-E Prices from a config entry."""
-    hass.config_entries.async_setup_platforms(entry, ["sensor"])
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(entry, "sensor")
+    )
     return True
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload ENTSO-E Prices config entry."""
-    await hass.config_entries.async_unload_platforms(entry, ["sensor"])
+    await hass.config_entries.async_forward_entry_unload(entry, "sensor")
     return True
