@@ -1,19 +1,22 @@
-ENTSO-E Prices Home Assistant Integration
+# ENTSO-E Prices Home Assistant Integration
+
 This is a custom Home Assistant integration that fetches day-ahead electricity prices from the ENTSO-E API and calculates consumer prices. It supports manual data update requests and normal polling at regular intervals.
 
-Features
-Fetches day-ahead electricity prices from the ENTSO-E API.
-Calculates consumer prices based on wholesale prices.
-Allows manual data update requests via a service call.
-Polls for updates every 15 minutes after the initial update.
-Installation
-Manual Installation
-Download the integration files and place them in the custom_components/entsoeprices directory within your Home Assistant configuration directory.
+## Features
 
-Ensure your directory structure looks like this:
+- Fetches day-ahead electricity prices from the ENTSO-E API.
+- Calculates consumer prices based on wholesale prices.
+- Allows manual data update requests via a service call.
+- Polls for updates every 15 minutes after the initial update.
 
-markdown
-Code kopiëren
+## Installation
+
+### Manual Installation
+
+1. Download the integration files and place them in the `custom_components/entsoeprices` directory within your Home Assistant configuration directory.
+
+2. Ensure your directory structure looks like this:
+
 custom_components/
 └── entsoeprices/
     ├── __init__.py
@@ -21,20 +24,25 @@ custom_components/
     ├── const.py
     ├── manifest.json
     └── sensor.py
-Configuration
-Add the ENTSO-E Prices integration via the Home Assistant UI:
 
-Go to Configuration -> Integrations.
-Click the Add Integration button.
-Search for "ENTSO-E Prices" and follow the setup instructions.
-Add the following to your configuration.yaml to expose the update service:
 
-yaml
-Code kopiëren
+### Configuration
+
+1. Add the ENTSO-E Prices integration via the Home Assistant UI:
+
+- Go to **Configuration** -> **Integrations**.
+- Click the **Add Integration** button.
+- Search for "ENTSO-E Prices" and follow the setup instructions.
+
+2. Add the following to your `configuration.yaml` to expose the update service:
+
+```yaml
 homeassistant:
   customize:
     sensor.entsoe_prices:
       service: entsoeprices.update
+
+
 Service Call
 The integration provides a service to manually trigger a data update:
 
