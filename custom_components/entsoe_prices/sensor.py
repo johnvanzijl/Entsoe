@@ -7,6 +7,8 @@ from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import Throttle
 
+from .const import DOMAIN, CONF_API_KEY
+
 _LOGGER = logging.getLogger(__name__)
 
 API_URL = 'https://transparency.entsoe.eu/api'
@@ -45,7 +47,7 @@ def calculate_consumer_price(groothandelsprijs_per_mwh):
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Set up the sensor platform."""
-    api_key = config_entry.data["api_key"]
+    api_key = config_entry.data[CONF_API_KEY]
     coordinator = EntsoeDataUpdateCoordinator(hass, api_key)
     await coordinator.async_refresh()
     async_add_entities([EntsoeSensor(coordinator)], True)
