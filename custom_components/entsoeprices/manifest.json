@@ -3,7 +3,7 @@
   "name": "ENTSO-E Prices",
   "version": "1.1",
   "documentation": "https://github.com/johnvanzijl/entsoeprices",
-  "requirements": ["requests"],
+  "requirements": [],
   "dependencies": [],
   "codeowners": ["@johnvanzijl"],
   "iot_class": "cloud_polling",
