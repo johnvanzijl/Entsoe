@@ -5,8 +5,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, DEVICE_NAME, CONF_API_KEY
-from .coordinator import EntsoeDataUpdateCoordinator
+from .const import DOMAIN, DEVICE_NAME
 
 class EntsoePricesUpdateButton(CoordinatorEntity, ButtonEntity):
     """Button to manually update ENTSO-E Prices."""
