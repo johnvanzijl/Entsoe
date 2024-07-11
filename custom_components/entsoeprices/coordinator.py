@@ -39,7 +39,7 @@ async def fetch_day_ahead_prices(api_key, start_date, end_date):
 def parse_day_ahead_prices(xml_data):
     """Parse the XML data and extract prices."""
     try:
-        root = etree.fromstring(bytes(xml_data, 'utf-8'))
+        root = etree.fromstring(xml_data)
         ns = {'ns': 'urn:iec62325.351:tc57wg16:451-3:publicationdocument:7:0'}
         
         # List to hold the data
@@ -117,4 +117,4 @@ class EntsoeDataUpdateCoordinator(DataUpdateCoordinator):
             return consumentenprijzen
         except Exception as e:
             _LOGGER.error("Error fetching data: %s", e)
-            raise UpdateFailed(f"Error fetching data: %e")
+            raise UpdateFailed(f"Error fetching data: {e}")
