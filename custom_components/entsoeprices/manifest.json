@@ -1,11 +1,10 @@
 {
   "domain": "entsoeprices",
   "name": "ENTSO-E Prices",
-  "version": "1.1",
-  "documentation": "https://github.com/johnvanzijl/entsoeprices",
-  "requirements": ["aiohttp"],
+  "version": "1.0",
+  "documentation": "https://www.example.com",
+  "requirements": ["aiohttp", "lxml"],
   "dependencies": [],
-  "codeowners": ["@johnvanzijl"],
-  "iot_class": "cloud_polling",
+  "codeowners": ["@your_github_username"],
   "config_flow": true
 }
