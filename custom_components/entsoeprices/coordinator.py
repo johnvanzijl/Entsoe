@@ -38,6 +38,7 @@ async def fetch_day_ahead_prices(api_key, start_date, end_date):
 
 def parse_day_ahead_prices(xml_data):
     """Parse the XML data and extract prices."""
+    _LOGGER.debug("Parsing XML data")
     try:
         root = etree.fromstring(xml_data)
         ns = {'ns': 'urn:iec62325.351:tc57wg16:451-3:publicationdocument:7:0'}
@@ -60,6 +61,7 @@ def parse_day_ahead_prices(xml_data):
                     'price_amount': float(price_amount)
                 })
         
+        _LOGGER.debug("Parsed data: %s", data)
         return data
     except Exception as e:
         _LOGGER.error("Error parsing XML data: %s", e)
@@ -88,6 +90,7 @@ class EntsoeDataUpdateCoordinator(DataUpdateCoordinator):
 
     def __init__(self, hass: HomeAssistant, api_key: str):
         """Initialize."""
+        _LOGGER.debug("Initializing EntsoeDataUpdateCoordinator")
         self.api_key = api_key
         self.update_interval = INITIAL_UPDATE_INTERVAL
         super().__init__(
@@ -97,6 +100,7 @@ class EntsoeDataUpdateCoordinator(DataUpdateCoordinator):
             update_method=self._async_update_data,
             update_interval=self.update_interval,
         )
+        _LOGGER.debug("EntsoeDataUpdateCoordinator initialized")
 
     async def _async_update_data(self):
         """Fetch data from ENTSO-E."""
