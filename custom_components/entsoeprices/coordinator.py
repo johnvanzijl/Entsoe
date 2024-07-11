@@ -39,7 +39,7 @@ async def fetch_day_ahead_prices(api_key, start_date, end_date):
 def parse_day_ahead_prices(xml_data):
     """Parse the XML data and extract prices."""
     try:
-        root = etree.fromstring(xml_data)
+        root = etree.fromstring(bytes(xml_data, 'utf-8'))
         ns = {'ns': 'urn:iec62325.351:tc57wg16:451-3:publicationdocument:7:0'}
         
         # List to hold the data
