@@ -60,9 +60,12 @@ class EntsoeHistoricalSensor(CoordinatorEntity, SensorEntity):
                 # Print the extracted pairs
                 for date, price in date_price_pairs:
                     print(f"Date: {date}, Price: {price}")
+                    historical_data = {date: price}
+                    self._attr_extra_state_attributes.update(historical_data)
                     
                 _LOGGER.debug("Returning latest state: %s", latest_price)
-                return latest_price
+                #return latest_price
+                return none
         _LOGGER.debug("State not available")
         return None
 
@@ -75,6 +78,7 @@ class EntsoeHistoricalSensor(CoordinatorEntity, SensorEntity):
     @property
     def extra_state_attributes(self):
         """Return the state attributes."""
+        _LOGGER.debug("extra_state_attributes")
         if self.coordinator.data:
             historical_data = {entry['date'].isoformat(): entry['price_amount'] for entry in self.coordinator.data}
             self._attr_extra_state_attributes.update(historical_data)
