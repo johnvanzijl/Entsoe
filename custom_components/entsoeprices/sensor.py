@@ -54,6 +54,13 @@ class EntsoeHistoricalSensor(CoordinatorEntity, SensorEntity):
             latest_price = self.coordinator.data[-1] if self.coordinator.data else None
             if latest_price is not None:
                 _LOGGER.debug("Returning latest state data: %s", self.coordinator.data)
+                # Extract date and price_amount pairs
+                date_price_pairs = [(entry['date'], entry['price_amount']) for entry in self.coordinator.data]
+                
+                # Print the extracted pairs
+                for date, price in date_price_pairs:
+                    print(f"Date: {date}, Price: {price}")
+                    
                 _LOGGER.debug("Returning latest state: %s", latest_price)
                 return latest_price
         _LOGGER.debug("State not available")
