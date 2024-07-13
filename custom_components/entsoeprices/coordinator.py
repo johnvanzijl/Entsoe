@@ -13,7 +13,7 @@ _LOGGER = logging.getLogger(__name__)
 
 API_URL = 'https://web-api.tp.entsoe.eu/api'
 MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=15)
-INITIAL_UPDATE_INTERVAL = timedelta(seconds=10)
+INITIAL_UPDATE_INTERVAL = timedelta(seconds=5)
 
 async def fetch_day_ahead_prices(api_key, start_date, end_date):
     _LOGGER.debug("Fetching day ahead prices from ENTSO-E API")
