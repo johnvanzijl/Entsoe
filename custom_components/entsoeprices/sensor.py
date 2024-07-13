@@ -51,9 +51,9 @@ class EntsoeHistoricalSensor(CoordinatorEntity, SensorEntity):
         _LOGGER.debug("Return the state of the sensor")
 
         if self.coordinator.data:
-            _LOGGER.debug("Returning latest state data: %s", self.coordinator.data)
             latest_price = self.coordinator.data[-1] if self.coordinator.data else None
             if latest_price is not None:
+                _LOGGER.debug("Returning latest state data: %s", self.coordinator.data)
                 _LOGGER.debug("Returning latest state: %s", latest_price)
                 return latest_price
         _LOGGER.debug("State not available")
