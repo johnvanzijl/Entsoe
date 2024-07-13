@@ -118,7 +118,8 @@ class EntsoeDataUpdateCoordinator(DataUpdateCoordinator):
             _LOGGER.debug("Calculated consumer prices: %s", consumentenprijzen)
             # Update the polling interval after the initial update
             self.update_interval = MIN_TIME_BETWEEN_UPDATES
-            return consumentenprijzen
+            #return consumentenprijzen
+            return data
         except Exception as e:
             _LOGGER.error("Error fetching data: %s", e)
             raise UpdateFailed(f"Error fetching data: {e}")
