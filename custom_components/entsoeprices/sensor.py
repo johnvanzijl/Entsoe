@@ -64,8 +64,8 @@ class EntsoeHistoricalSensor(CoordinatorEntity, SensorEntity):
                     self._attr_extra_state_attributes.update(historical_data)
                     
                 _LOGGER.debug("Returning latest state: %s", latest_price)
-                #return latest_price
-                return none
+                return price
+                
         _LOGGER.debug("State not available")
         return None
 
