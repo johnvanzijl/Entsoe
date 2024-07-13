@@ -49,6 +49,7 @@ class EntsoeHistoricalSensor(CoordinatorEntity, SensorEntity):
     def state(self):
         """Return the state of the sensor."""
         if self.coordinator.data:
+            _LOGGER.debug("Returning latest state data: %s", data)
             latest_price = self.coordinator.data[-1] if self.coordinator.data else None
             if latest_price is not None:
                 _LOGGER.debug("Returning latest state: %s", latest_price)
